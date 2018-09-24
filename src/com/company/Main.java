@@ -22,6 +22,7 @@ public class Main {
         System.out.println(parser("{{1,2},3,4,5,6}"));
         System.out.println(parser("{{1,2},3,4,{5,6}}"));
 
+        
         System.out.println(" ");
         System.out.println(parser("{"));
         System.out.println(parser("{{}{}}"));
