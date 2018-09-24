@@ -13,26 +13,33 @@ package com.company;
 * 2.  Write a recursive descent parser for this CFG.  Use Java and submit your answer as a zipped Netbeans project to the Parser dropbox on the BOLT site for this class.
 * */
 
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println(parser("{{},{},{}}"));
-        System.out.println(parser("{{1,2},{1,2}}"));
-        System.out.println(parser("{{1,1},1,1,1}"));
-        System.out.println(parser("{{1,2},3,4,5,6}"));
-        System.out.println(parser("{{1,2},3,4,{5,6}}"));
+        //User input
+        Scanner sn = new Scanner(System.in);
+        System.out.println("Check Checker!");
+        System.out.println("Enter a set || \"q\" to quit || \"rsc\"to run system check");
+        String userInput = sn.nextLine();
 
-        
-        System.out.println(" ");
-        System.out.println(parser("{"));
-        System.out.println(parser("{{}{}}"));
-        System.out.println(parser("{{1,2,1,2,3}"));
+        //while loop to keep getting user input
+        while (!userInput.equals("q")) {
+
+            if (userInput.equals("rsc"))
+                systemCheck();//method calls the runCurrencyChecker with some default test cases
+
+            System.out.println(userInput + ": is " + parser(userInput) + "!");
+
+            System.out.println("Enter a set || \"q\" to quit || \"rsc\"to run system check");
+            userInput = sn.nextLine();
+        }
     }
 
     private static boolean parser(String value) {
         if (set(value)) {
             value = value.substring(1, value.length() - 1);
-//            System.out.println("After the Set Method: " + value);
             return list(value);
         }
         return false;
@@ -57,7 +64,6 @@ public class Main {
                 if (lastComma && value.charAt(i) == ',') {
                     String head = value.substring(0, i);
                     value = value.substring(i);
-//                   System.out.println("Head: " + head + "  New Value: " + value);
                     headValid = head(head);
                     if (!headValid)
                         return false;
@@ -71,7 +77,6 @@ public class Main {
     }
 
     private static Boolean head(String headValue) {
-//        System.out.println("Head Method: " + headValue + " Length: " + headValue.length());
 
         if (headValue.length() == 0 || !headValue.contains("{") && !headValue.contains("}") && !headValue.contains(","))
             return true;
@@ -82,7 +87,6 @@ public class Main {
     }
 
     private static Boolean tail(String tailValue) {
-//        System.out.println("Tail Method: " + tailValue + " Length: " + tailValue.length());
 
         if (tailValue.length() == 0)
             return true;
@@ -100,5 +104,24 @@ public class Main {
                 return list(tailValue) || head(tailValue);
         }
         return false;
+    }
+
+    private static void systemCheck()
+    {
+        System.out.println("{}" + parser("{}"));
+        System.out.println("{1}" + parser("{1}"));
+        System.out.println("{{},{},{}}"+ parser("{{},{},{}}"));
+        System.out.println("{{1,2},{1,2}}" + parser("{{1,2},{1,2}}"));
+        System.out.println("{{1,2},3}" + parser("{{1,2},3}"));
+        System.out.println("{{1,1},1,1,1}" + parser("{{1,1},1,1,1}"));
+        System.out.println("{{1,2},3,4,5,6}" + parser("{{1,2},3,4,5,6}"));
+        System.out.println("{{1,2},3,4,{5,6}}" + parser("{{1,2},3,4,{5,6}}"));
+        System.out.println("{{1,2},{1,2,3}}" + parser("{{1,2},{1,2,3}}"));
+
+        System.out.println(" ");
+        System.out.println("{" + parser("{"));
+        System.out.println("{{}{}}" + parser("{{}{}}"));
+        System.out.println("{{1,2,1,2,3}" + parser("{{1,2,1,2,3}"));
+        System.out.println("{{1,2},{1,2,3}}" + parser("{{1,2},{1,2,3}"));
     }
 }
