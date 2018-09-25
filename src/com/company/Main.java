@@ -10,7 +10,7 @@ package com.company;
 *   tail -> , head tail | ε
 *
 * 1.  Construct a parse tree for { { 1 , 2 } , 3 }.
-* 2.  Write a recursive descent parser for this CFG.  Use Java and submit your answer as a zipped Netbeans project to the Parser dropbox on the BOLT site for this class.
+* 2.  Write a recursive descent parser for this CFG.
 * */
 
 import java.util.Scanner;
@@ -28,7 +28,7 @@ public class Main {
         while (!userInput.equals("q")) {
 
             if (userInput.equals("rsc"))
-                systemCheck();//method calls the runCurrencyChecker with some default test cases
+                systemCheck();//method calls the systemCheck with some default test cases
 
             System.out.println(userInput + ": is " + parser(userInput) + "!");
 
@@ -45,30 +45,42 @@ public class Main {
         return false;
     }
 
+    /**
+     * Method checks if the set proved as a string is valid. --> set -> { list }
+     * @param value String representing a set
+     * @return Boolean true if the set is valid else false
+     */
     private static boolean set(String value) { return value.charAt(0) == '{' && value.charAt(value.length() - 1) == '}'; }
 
+    /**
+     * Method checks if the list is valid. --> list -> head tail | ε
+     * @param value String representing a list
+     * @return Boolean true if its valid, else it returns false
+     */
     private static boolean list(String value) {
 
-        if (value.length() == 0)
+        if (value.length() == 0 ) // checking for a empty string
             return true;
-        else {
-            boolean lastComma = true;
-            boolean headValid;
-            boolean tailValid;
+        else { //Checking if its a valid head and tail
+            boolean lastComma = true; //used to insure the proper comma is looked at when breaking up the string
+            boolean headValid; //represents if list has a proper head
+            boolean tailValid; // represents if list has a proper tail
 
-            for (int i = 0; i < value.length(); i++) {
+            for (int i = 0; i < value.length(); i++) { // going through the value and testing each chunk between commas
+                //making sure the comma parsed at isn't between  { }
                 if (value.charAt(i) == '{')
                     lastComma = false;
                 else if (value.charAt(i) == '}')
                     lastComma = true;
+                //if its not between two { }
                 if (lastComma && value.charAt(i) == ',') {
-                    String head = value.substring(0, i);
-                    value = value.substring(i);
-                    headValid = head(head);
-                    if (!headValid)
+                    String head = value.substring(0, i); //head value
+                    value = value.substring(i); //tail value
+                    headValid = head(head); //checking to see if head is valid (method is recursive)
+                    if (!headValid)// if head is false then the whole set is invalid
                         return false;
                     tailValid = tail(value);
-                    if (tailValid)
+                    if (tailValid)// if tail is true then this chuck is also true
                         return true;
                 }
             }
@@ -76,32 +88,38 @@ public class Main {
         }
     }
 
+    /**
+     * Method checks if head is valid (Recursive method) --> head -> number | set
+     * @param headValue String representing head value
+     * @return Boolean true if its valid, else it returns false
+     */
     private static Boolean head(String headValue) {
-
-        if (headValue.length() == 0 || !headValue.contains("{") && !headValue.contains("}") && !headValue.contains(","))
+        //Checking to see if its empty or a "number" value
+        if (headValue.length() == 0 || !headValue.contains(",") && !headValue.contains("{") && !headValue.contains("}"))
             return true;
-        if (set(headValue))
+        if (set(headValue))// checking to see if its a set
             return parser(headValue);
-
         return false;
     }
 
+    /**
+     * Method checks to see if the tail is valid --> tail -> , head tail | ε
+     * @param tailValue String representing the tail
+     * @return Boolean true if its valid, else it returns false
+     */
     private static Boolean tail(String tailValue) {
 
-        if (tailValue.length() == 0)
+        if (tailValue.length() == 0) //checking a empty string
             return true;
 
-        if (tailValue.length() >= 2) {
+        if (tailValue.length() >= 2) {//check its not to small to continue
             tailValue = tailValue.substring(1);
 
-            if (tailValue.equals("{}"))
-                return true;
+            if (tailValue.length() >= 3) // checking to see if its heads and tails
+                return list(tailValue) || head(tailValue);
 
             if (!tailValue.contains(",") && !tailValue.contains("{") && !tailValue.contains("}"))
                 return true;
-
-            if (tailValue.length() >= 3 && tailValue.contains(","))
-                return list(tailValue) || head(tailValue);
         }
         return false;
     }
@@ -122,6 +140,5 @@ public class Main {
         System.out.println("{" + parser("{"));
         System.out.println("{{}{}}" + parser("{{}{}}"));
         System.out.println("{{1,2,1,2,3}" + parser("{{1,2,1,2,3}"));
-        System.out.println("{{1,2},{1,2,3}}" + parser("{{1,2},{1,2,3}"));
     }
 }
